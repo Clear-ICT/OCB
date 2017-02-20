@@ -228,7 +228,7 @@ msgid ""
 "Follow this salesteam to automatically track the events associated to users "
 "of this team."
 msgstr ""
-"Urmariti aceasta echipa de vanzari pentru a tine evidenta automat "
+"Urmariti aceasta echipa de vânzări pentru a tine evidenta automat "
 "evenimentelor asociate utilizatorilor acestei echipe."
 
 #. module: sales_team
@@ -571,7 +571,7 @@ msgstr ""
 #. module: sales_team
 #: model:res.groups,name:sales_team.group_sale_salesman_all_leads
 msgid "User: All Documents"
-msgstr ""
+msgstr "Utilizator: Toate documentele"
 
 #. module: sales_team
 #: model:res.groups,name:sales_team.group_sale_salesman

@@ -233,7 +233,7 @@ odoo.define('website_sale.website_sale', function (require) {
             var precision = 2;
 
             if ($(".decimal_precision").length) {
-                precision = parseInt($(".decimal_precision").first().data('precision'));
+                precision = parseInt($(".decimal_precision").last().data('precision'));
             }
             var formatted = _.str.sprintf('%.' + precision + 'f', price).split('.');
             formatted[0] = utils.insert_thousand_seps(formatted[0]);
@@ -247,9 +247,9 @@ odoo.define('website_sale.website_sale', function (require) {
                 $img.parent().attr('data-oe-model', 'product.product').attr('data-oe-id', product_id)
                     .data('oe-model', 'product.product').data('oe-id', product_id);
 
-                $img = $(event_source).closest('tr.js_product, .oe_website_sale').find('img.js_variant_img_small');
-                if ($img) { // if only one, thumbnails are not displayed
-                    $img.attr("src", "/web/image/product.product/" + product_id + "/image/90x90");
+                var $thumbnail = $(event_source).closest('tr.js_product, .oe_website_sale').find('img.js_variant_img_small');
+                if ($thumbnail.length !== 0) { // if only one, thumbnails are not displayed
+                    $thumbnail.attr("src", "/web/image/product.product/" + product_id + "/image/90x90");
                     $('.carousel').carousel(0);
                 }
             }
@@ -259,12 +259,20 @@ odoo.define('website_sale.website_sale', function (require) {
                 $img.parent().attr('data-oe-model', 'product.product').attr('data-oe-id', product_id)
                     .data('oe-model', 'product.product').data('oe-id', product_id);
             }
+            // reset zooming constructs
+            $img.filter('[data-zoom-image]').attr('data-zoom-image', $img.attr('src'));
+            if ($img.data('zoomOdoo') !== undefined) {
+                $img.data('zoomOdoo').isReady = false;
+            }
         }
 
         $(oe_website_sale).on('change', 'input.js_product_change', function () {
+            var self = this;
             var $parent = $(this).closest('.js_product');
-            $parent.find(".oe_default_price:first .oe_currency_value").html( price_to_str(+$(this).data('lst_price')) );
-            $parent.find(".oe_price:first .oe_currency_value").html(price_to_str(+$(this).data('price')) );
+            $.when(base.ready()).then(function() {
+                $parent.find(".oe_default_price:first .oe_currency_value").html( price_to_str(+$(self).data('lst_price')) );
+                $parent.find(".oe_price:first .oe_currency_value").html(price_to_str(+$(self).data('price')) );
+            });
             update_product_image(this, +$(this).val());
         });
 
@@ -286,8 +294,10 @@ odoo.define('website_sale.website_sale', function (require) {
             var product_id = false;
             for (var k in variant_ids) {
                 if (_.isEmpty(_.difference(variant_ids[k][1], values))) {
-                    $price.html(price_to_str(variant_ids[k][2]));
-                    $default_price.html(price_to_str(variant_ids[k][3]));
+                    $.when(base.ready()).then(function() {
+                        $price.html(price_to_str(variant_ids[k][2]));
+                        $default_price.html(price_to_str(variant_ids[k][3]));
+                    });
                     if (variant_ids[k][3]-variant_ids[k][2]>0.01) {
                         $default_price.closest('.oe_website_sale').addClass("discount");
                         $optional_price.closest('.oe_optional').show().css('text-decoration', 'line-through');
